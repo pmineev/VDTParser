@@ -16,7 +16,7 @@ def get_url_list(date_from, date_to):
     url_list = list()
 
     delta = timedelta(days=1)
-    for i in range((date_to - date_from).days):
+    for i in range((date_to - date_from).days + 1):
         current_date = date_from + i*delta
         url = base_url + '/?date=' + datetime.strftime(current_date, "%Y-%m-%d")
         url_list.append(url)
