@@ -1,13 +1,13 @@
 import pprint
-from dataclasses import dataclass
 from datetime import date, datetime, timedelta
-from typing import List
 
 import aiohttp
 import asyncio
 import ssl
 
 from bs4 import BeautifulSoup
+
+from entities import Flight, Leaderboard
 
 base_url = 'https://vdt.the23.ru'
 
@@ -33,28 +33,6 @@ async def fetch_all(urls, loop):
     async with aiohttp.ClientSession(loop=loop) as session:
         results = await asyncio.gather(*[fetch(session, url) for url in urls], return_exceptions=True)
         return results
-
-
-@dataclass
-class Flight:
-    position: int
-    country: str
-    player: str
-    time: float
-    green_delta: float
-    delta: float
-    drone: str
-    date: datetime
-    updates: int
-
-
-@dataclass
-class Leaderboard:
-    season: int
-    date: date
-    map: str
-    track: str
-    flights: List[Flight] = None
 
 
 def main():
