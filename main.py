@@ -1,21 +1,16 @@
 import pprint
 from datetime import date
 
-import asyncio
-
-from aiohttpclient import base_url, get_url_list, fetch_all
+from aiohttpclient import get_vdt_list, get_leaderboards
 from parsers import parse_vdt_list, parse_flights
 
 
 def main():
-    loop = asyncio.get_event_loop()
-
     date_from = date(2021, 9, 10)
     date_to = date(2021, 9, 12)
-    url_list = get_url_list(date_from, date_to)
 
-    vdt_list_html = loop.run_until_complete(fetch_all([base_url], loop))[0]
-    leaderboard_htmls = loop.run_until_complete(fetch_all(url_list, loop))
+    vdt_list_html = get_vdt_list()
+    leaderboard_htmls = get_leaderboards(date_from, date_to)
 
     leaderboards = parse_vdt_list(vdt_list_html, date_from, date_to)
 
