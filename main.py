@@ -15,8 +15,9 @@ def main():
     leaderboards = parse_vdt_list(vdt_list_html, date_from, date_to)
 
     for leaderboard, html in zip(leaderboards, leaderboard_htmls):
-        flights = parse_flights(html)
+        flights, world_record = parse_flights(html)
         leaderboard.flights = flights
+        leaderboard.world_record = world_record
 
     pprint.pp(leaderboards)
 

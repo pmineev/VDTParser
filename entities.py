@@ -23,3 +23,4 @@ class Leaderboard:
     map: str
     track: str
     flights: List[Flight] = None
+    world_record: float = None

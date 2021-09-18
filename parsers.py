@@ -27,15 +27,22 @@ def parse_vdt_list(html, date_from, date_to):
 
 def parse_flights(html):
     soup = BeautifulSoup(html, 'html.parser')
-    table = soup.find('table')
-    rows = table.find_all('tr')
+    tables = soup.find_all('table')
+    if len(tables) != 2:
+        return None
+
+    rows = tables[0].find_all('tr')
     rows.pop(0)  # удаление заголовка
     flights = list()
     for row in rows:
         flight = parse_flight(row)
         flights.append(flight)
 
-    return flights
+    rows = tables[1].find_all('tr')
+    rows.pop(0)  # удаление заголовка
+    world_record = min([float(row.find_all('td')[1].text) for row in rows])
+
+    return flights, world_record
 
 
 def parse_flight(row):
