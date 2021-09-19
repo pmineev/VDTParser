@@ -4,6 +4,9 @@ from datetime import date
 from aiohttpclient import get_vdt_list, get_leaderboards
 from parsers import parse_vdt_list, parse_flights
 from calc import filter_leaderboards, get_abs_vdt_deltas, get_abs_world_deltas, get_rel_vdt_deltas, get_rel_world_deltas
+from mainwindow import Window
+
+import wx
 
 
 def main():
@@ -34,4 +37,7 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    # main()
+    app = wx.App()
+    wnd = Window()
+    app.MainLoop()
