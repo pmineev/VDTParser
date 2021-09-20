@@ -48,3 +48,13 @@ def get_rel_world_deltas(leaderboards, nickname):
         deltas[leaderboard.date] = (flight.time - leaderboard.world_record) / leaderboard.world_record * 100
 
     return deltas
+
+
+def get_deltas(leaderboards, nickname):
+    filtered_leaderboards = filter_leaderboards(leaderboards, nickname)
+    return {
+        'abs_vdt': get_abs_vdt_deltas(filtered_leaderboards, nickname),
+        'abs_world': get_abs_world_deltas(filtered_leaderboards, nickname),
+        'rel_vdt': get_rel_vdt_deltas(filtered_leaderboards, nickname),
+        'rel_world': get_rel_world_deltas(filtered_leaderboards, nickname),
+    }

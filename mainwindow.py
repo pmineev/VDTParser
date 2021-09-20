@@ -4,15 +4,18 @@ from wx.adv import DatePickerCtrl
 from wxmplot import PlotPanel
 from datetime import date
 
+from scrapers import get_leaderboards
+from calc import get_deltas
+
 
 class Window(Frame):
 
     def __init__(self, parent=None, title='VDTParser'):
         Frame.__init__(self, parent, title=title)
 
-        self.nickname = None
-        self.date_from = None
-        self.date_to = None
+        self.nickname = ''
+        self.date_from = date.today()
+        self.date_to = date.today()
 
         self.plot_rel = None
         self.plot_abs = None
@@ -49,8 +52,8 @@ class Window(Frame):
         start_button = Button(panel, label='вперед!!!')
         start_button.Bind(wx.EVT_BUTTON, self.OnStartButtonPressed)
         controls_box.Add(start_button, flag=wx.ALL | wx.EXPAND, border=10)
-        start_button.Bind(wx.EVT_BUTTON, self.OnExportButtonPressed)
         export_button = Button(panel, label='экспорт в xls')
+        export_button.Bind(wx.EVT_BUTTON, self.OnExportButtonPressed)
         controls_box.Add(export_button, flag=wx.ALL | wx.EXPAND, border=10)
 
         hbox.Add(controls_box)
@@ -82,7 +85,8 @@ class Window(Frame):
         self.date_to = date(d.year, d.month+1, d.day)
 
     def OnStartButtonPressed(self, e):
-        pass
+        leaderboards = get_leaderboards(self.date_from, self.date_to)
+        deltas = get_deltas(leaderboards, self.nickname)
 
     def OnExportButtonPressed(self, e):
         pass
