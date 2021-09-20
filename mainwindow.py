@@ -91,9 +91,9 @@ class Window(Frame):
         leaderboards = get_leaderboards(self.date_from, self.date_to)
         deltas = get_deltas(leaderboards, self.nickname)
 
-        self.rel_plot.plot(list(deltas['rel_vdt'].keys()), deltas['rel_vdt'].values(), labelfontsize=5)
+        self.rel_plot.plot(list(deltas['rel_vdt'].keys()), deltas['rel_vdt'].values(), labelfontsize=5, title='проценты всоса')
         self.rel_plot.oplot(list(deltas['rel_world'].keys()), deltas['rel_world'].values(), labelfontsize=5)
-        self.abs_plot.plot(list(deltas['abs_vdt'].keys()), deltas['abs_vdt'].values(), labelfontsize=5)
+        self.abs_plot.plot(list(deltas['abs_vdt'].keys()), deltas['abs_vdt'].values(), labelfontsize=5, title='абсолютные всосы')
         self.abs_plot.oplot(list(deltas['abs_world'].keys()), deltas['abs_world'].values(), labelfontsize=5)
 
     def OnExportButtonPressed(self, e):
