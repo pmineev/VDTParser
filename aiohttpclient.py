@@ -36,6 +36,6 @@ def get_vdt_list():
     return loop.run_until_complete(fetch_all([base_url]))[0]
 
 
-def get_leaderboards(date_from, date_to):
+def get_leaderboards_htmls(date_from, date_to):
     url_list = get_url_list(date_from, date_to)
     return loop.run_until_complete(fetch_all(url_list))
