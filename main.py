@@ -1,11 +1,11 @@
 import wx
 
-from mainwindow import Window
+from mainwindow import MainWindow
 
 
 def main():
     app = wx.App()
-    Window()
+    MainWindow()
     app.MainLoop()
 
 
