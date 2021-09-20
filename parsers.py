@@ -12,7 +12,12 @@ def parse_vdt_list(html, date_from, date_to):
     leaderboards = list()
     for i in range((date_to - date_from).days + 1):
         current_date = date_from + i * delta
-        current_tag = soup.find(text=datetime.strftime(current_date, "%Y-%m-%d")).parent.parent
+
+        date_tag = soup.find(text=datetime.strftime(current_date, "%Y-%m-%d"))
+        if not date_tag:
+            break
+
+        current_tag = date_tag.parent.parent
         cells = current_tag.find_all('td')
         leaderboard = Leaderboard(
             season=int(cells[0].text),
