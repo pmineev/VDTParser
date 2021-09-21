@@ -3,7 +3,8 @@ from wx import Frame, Panel, TextCtrl, BoxSizer, StaticText, Button, Size
 from wx.adv import DatePickerCtrl
 from datetime import date
 
-from scrapers import get_leaderboards
+from scrapers import ScraperThread
+from events import SCRAPING_COMPLETEG
 from calc import get_deltas
 
 from plotcanvas import PlotCanvas
@@ -19,6 +20,7 @@ class MainWindow(Frame):
         self.date_to = date.today()
 
         self.plot_canvas = None
+        self.scraper = None
 
         self.init()
         self.SetMinSize(Size(900, 600))
@@ -64,9 +66,10 @@ class MainWindow(Frame):
 
         self.SetSizerAndFit(hbox)
 
+        self.Bind(SCRAPING_COMPLETEG, self.OnScrapingCompleted)
+
     def OnNicknameChanged(self, e):
         self.nickname = e.GetEventObject().GetValue()
-        print(self.nickname)
 
     def OnDateFromChanged(self, e):
         d = e.GetEventObject().GetValue()
@@ -76,10 +79,11 @@ class MainWindow(Frame):
         d = e.GetEventObject().GetValue()
         self.date_to = date(d.year, d.month + 1, d.day)
 
-    def OnStartButtonPressed(self, e):
-        leaderboards = get_leaderboards(self.date_from, self.date_to)
-        deltas = get_deltas(leaderboards, self.nickname)
+    def OnStartButtonPressed(self, _):
+        self.scraper = ScraperThread(self, self.date_from, self.date_to)
 
+    def OnScrapingCompleted(self, e):
+        deltas = get_deltas(e.leaderboards, self.nickname)
         self.plot_canvas.plot_deltas(deltas)
 
     def OnExportButtonPressed(self, e):
