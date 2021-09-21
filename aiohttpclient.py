@@ -23,7 +23,7 @@ def get_url_list(date_from, date_to):
 
 async def fetch(session, url):
     async with session.get(url, ssl=ssl.SSLContext()) as response:
-        return await response.text()
+        return await response.text(errors='replace')
 
 
 async def fetch_all(urls):
