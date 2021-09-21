@@ -45,4 +45,6 @@ def get_vdt_list(event_poster):
 def get_leaderboards_htmls(date_from, date_to, event_poster):
     url_list = get_url_list(date_from, date_to)
 
-    return loop.run_until_complete(fetch_all(url_list, event_poster))
+    leaderboards_htmls = loop.run_until_complete(fetch_all(url_list, event_poster))
+
+    return list(filter(lambda html: html != '404', leaderboards_htmls))

@@ -15,7 +15,7 @@ def parse_vdt_list(html, date_from, date_to):
 
         date_tag = soup.find(text=datetime.strftime(current_date, "%Y-%m-%d"))
         if not date_tag:
-            break
+            continue
 
         current_tag = date_tag.parent.parent
         cells = current_tag.find_all('td')
