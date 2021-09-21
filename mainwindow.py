@@ -1,12 +1,12 @@
 import wx
-from wx import Frame, Panel, TextCtrl, BoxSizer, StaticText, Button, Gauge, Size
+from wx import Frame, Panel, TextCtrl, BoxSizer, StaticText, Button, Gauge, Size, FileDialog
 from wx.adv import DatePickerCtrl
 from datetime import date
 
 from scrapers import ScraperThread
 from events import SCRAPING_COMPLETED, PROGRESS_TICK
 from calc import get_deltas
-
+from storages import LeaderboardsStorage
 from plotcanvas import PlotCanvas
 
 
@@ -23,6 +23,8 @@ class MainWindow(Frame):
         self.scraper = None
 
         self.fetch_progress_bar = None
+
+        self.leaderboards_storage = LeaderboardsStorage()
 
         self.init()
         self.SetMinSize(Size(900, 600))
@@ -56,7 +58,7 @@ class MainWindow(Frame):
         start_button = Button(panel, label='вперед!!!')
         start_button.Bind(wx.EVT_BUTTON, self.OnStartButtonPressed)
         controls_box.Add(start_button, flag=wx.ALL | wx.EXPAND, border=10)
-        export_button = Button(panel, label='экспорт в xls')
+        export_button = Button(panel, label='экспорт в .xlsx')
         export_button.Bind(wx.EVT_BUTTON, self.OnExportButtonPressed)
         controls_box.Add(export_button, flag=wx.ALL | wx.EXPAND, border=10)
 
@@ -93,11 +95,23 @@ class MainWindow(Frame):
         self.scraper = ScraperThread(self, self.date_from, self.date_to)
 
     def OnScrapingCompleted(self, e):
-        deltas = get_deltas(e.leaderboards, self.nickname)
+        player_leaderboards, deltas = get_deltas(e.leaderboards, self.nickname)
+
+        self.leaderboards_storage.nickname = self.nickname
+        self.leaderboards_storage.leaderboards = player_leaderboards
+        self.leaderboards_storage.deltas = deltas
+
         self.plot_canvas.plot_deltas(deltas)
 
-    def OnExportButtonPressed(self, e):
-        pass
+    def OnExportButtonPressed(self, _):
+        with FileDialog(self, "Экспорт результатов", wildcard="Книга Excel (*.xlsx)|*.xlsx",
+                        style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT,
+                        defaultFile=f'{self.nickname} {self.date_from.strftime("%d.%m.%Y")}-{self.date_to.strftime("%d.%m.%Y")}.xlsx') as file_dialog:
+
+            if file_dialog.ShowModal() == wx.ID_CANCEL:
+                return
+
+            self.leaderboards_storage.save(file_dialog.GetPath())
 
     def OnProgressTick(self, e):
         if e.type == 'fetch':

@@ -61,4 +61,4 @@ def get_deltas(leaderboards, nickname):
         'rel_world': get_rel_world_deltas(filtered_leaderboards, nickname),
     }
 
-    return deltas
+    return filtered_leaderboards, deltas
