@@ -1,10 +1,10 @@
 import wx
-from wx import Frame, Panel, TextCtrl, BoxSizer, StaticText, Button, Size
+from wx import Frame, Panel, TextCtrl, BoxSizer, StaticText, Button, Gauge, Size
 from wx.adv import DatePickerCtrl
 from datetime import date
 
 from scrapers import ScraperThread
-from events import SCRAPING_COMPLETEG
+from events import SCRAPING_COMPLETED, PROGRESS_TICK
 from calc import get_deltas
 
 from plotcanvas import PlotCanvas
@@ -21,6 +21,8 @@ class MainWindow(Frame):
 
         self.plot_canvas = None
         self.scraper = None
+
+        self.fetch_progress_bar = None
 
         self.init()
         self.SetMinSize(Size(900, 600))
@@ -58,6 +60,11 @@ class MainWindow(Frame):
         export_button.Bind(wx.EVT_BUTTON, self.OnExportButtonPressed)
         controls_box.Add(export_button, flag=wx.ALL | wx.EXPAND, border=10)
 
+        controls_box.AddStretchSpacer()
+
+        self.fetch_progress_bar = Gauge(panel)
+        controls_box.Add(self.fetch_progress_bar, flag=wx.ALL | wx.EXPAND, border=10)
+
         panel.SetSizer(controls_box)
 
         hbox.Add(panel, flag=wx.EXPAND)
@@ -66,7 +73,8 @@ class MainWindow(Frame):
 
         self.SetSizerAndFit(hbox)
 
-        self.Bind(SCRAPING_COMPLETEG, self.OnScrapingCompleted)
+        self.Bind(SCRAPING_COMPLETED, self.OnScrapingCompleted)
+        self.Bind(PROGRESS_TICK, self.OnProgressTick)
 
     def OnNicknameChanged(self, e):
         self.nickname = e.GetEventObject().GetValue()
@@ -80,6 +88,8 @@ class MainWindow(Frame):
         self.date_to = date(d.year, d.month + 1, d.day)
 
     def OnStartButtonPressed(self, _):
+        self.fetch_progress_bar.SetValue(0)
+        self.fetch_progress_bar.SetRange((self.date_to - self.date_from).days + 2)
         self.scraper = ScraperThread(self, self.date_from, self.date_to)
 
     def OnScrapingCompleted(self, e):
@@ -88,3 +98,7 @@ class MainWindow(Frame):
 
     def OnExportButtonPressed(self, e):
         pass
+
+    def OnProgressTick(self, e):
+        if e.type == 'fetch':
+            self.fetch_progress_bar.SetValue(self.fetch_progress_bar.GetValue() + 1)

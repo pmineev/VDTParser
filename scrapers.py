@@ -3,7 +3,7 @@ from wx import PostEvent
 
 from aiohttpclient import get_vdt_list, get_leaderboards_htmls
 from parsers import parse_vdt_list, parse_flights
-from events import ScrapingCompletedEvent
+from events import ScrapingCompletedEvent, ProgressTickEvent, EventPoster
 
 
 class ScraperThread(Thread):
@@ -17,8 +17,10 @@ class ScraperThread(Thread):
         self.start()
 
     def run(self):
-        vdt_list_html = get_vdt_list()
-        leaderboard_htmls = get_leaderboards_htmls(self.date_from, self.date_to)
+        fetch_event_poster = EventPoster(self.notify_window, ProgressTickEvent(type='fetch'))
+
+        vdt_list_html = get_vdt_list(fetch_event_poster)
+        leaderboard_htmls = get_leaderboards_htmls(self.date_from, self.date_to, fetch_event_poster)
 
         leaderboards = parse_vdt_list(vdt_list_html, self.date_from, self.date_to)
 

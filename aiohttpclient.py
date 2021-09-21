@@ -21,21 +21,28 @@ def get_url_list(date_from, date_to):
     return url_list
 
 
-async def fetch(session, url):
+async def fetch(session, url, event_poster=None):
     async with session.get(url, ssl=ssl.SSLContext()) as response:
-        return await response.text(errors='replace')
+        text = await response.text(errors='replace')
+
+        if event_poster:
+            event_poster.post()
+
+        return text
 
 
-async def fetch_all(urls):
+async def fetch_all(urls, event_poster=None):
     async with aiohttp.ClientSession(loop=loop) as session:
-        results = await asyncio.gather(*[fetch(session, url) for url in urls], return_exceptions=True)
+        results = await asyncio.gather(*[fetch(session, url, event_poster) for url in urls], return_exceptions=True)
+
         return results
 
 
-def get_vdt_list():
-    return loop.run_until_complete(fetch_all([base_url]))[0]
+def get_vdt_list(event_poster):
+    return loop.run_until_complete(fetch_all([base_url], event_poster))[0]
 
 
-def get_leaderboards_htmls(date_from, date_to):
+def get_leaderboards_htmls(date_from, date_to, event_poster):
     url_list = get_url_list(date_from, date_to)
-    return loop.run_until_complete(fetch_all(url_list))
+
+    return loop.run_until_complete(fetch_all(url_list, event_poster))
