@@ -19,6 +19,9 @@ class MainWindow(Frame):
         self.date_from = date.today()
         self.date_to = date.today()
 
+        self.start_button = None
+        self.export_button = None
+
         self.plot_canvas = None
         self.scraper = None
 
@@ -55,12 +58,14 @@ class MainWindow(Frame):
         dates_box.Add(date_to_control, flag=wx.LEFT, border=10)
         controls_box.Add(dates_box, flag=wx.ALL, border=10)
 
-        start_button = Button(panel, label='вперед!!!')
-        start_button.Bind(wx.EVT_BUTTON, self.OnStartButtonPressed)
-        controls_box.Add(start_button, flag=wx.ALL | wx.EXPAND, border=10)
-        export_button = Button(panel, label='экспорт в .xlsx')
-        export_button.Bind(wx.EVT_BUTTON, self.OnExportButtonPressed)
-        controls_box.Add(export_button, flag=wx.ALL | wx.EXPAND, border=10)
+        self.start_button = Button(panel, label='вперед!!!')
+        self.start_button.Disable()
+        self.start_button.Bind(wx.EVT_BUTTON, self.OnStartButtonPressed)
+        controls_box.Add(self.start_button, flag=wx.ALL | wx.EXPAND, border=10)
+        self.export_button = Button(panel, label='экспорт в .xlsx')
+        self.export_button.Bind(wx.EVT_BUTTON, self.OnExportButtonPressed)
+        self.export_button.Disable()
+        controls_box.Add(self.export_button, flag=wx.ALL | wx.EXPAND, border=10)
 
         controls_box.AddStretchSpacer()
 
@@ -81,6 +86,11 @@ class MainWindow(Frame):
     def OnNicknameChanged(self, e):
         self.nickname = e.GetEventObject().GetValue()
 
+        if not self.nickname:
+            self.start_button.Disable()
+        else:
+            self.start_button.Enable()
+
     def OnDateFromChanged(self, e):
         d = e.GetEventObject().GetValue()
         self.date_from = date(d.year, d.month + 1, d.day)
@@ -90,6 +100,9 @@ class MainWindow(Frame):
         self.date_to = date(d.year, d.month + 1, d.day)
 
     def OnStartButtonPressed(self, _):
+        self.start_button.Disable()
+        self.export_button.Disable()
+
         self.fetch_progress_bar.SetValue(0)
         self.fetch_progress_bar.SetRange((self.date_to - self.date_from).days + 2)
         self.scraper = ScraperThread(self, self.date_from, self.date_to)
@@ -102,6 +115,9 @@ class MainWindow(Frame):
         self.leaderboards_storage.deltas = deltas
 
         self.plot_canvas.plot_deltas(deltas)
+
+        self.start_button.Enable()
+        self.export_button.Enable()
 
     def OnExportButtonPressed(self, _):
         with FileDialog(self, "Экспорт результатов", wildcard="Книга Excel (*.xlsx)|*.xlsx",
