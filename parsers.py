@@ -34,7 +34,7 @@ def parse_flights(html):
     soup = BeautifulSoup(html, 'html.parser')
     tables = soup.find_all('table')
     if len(tables) != 2:
-        return None
+        return None, None
 
     rows = tables[0].find_all('tr')
     rows.pop(0)  # удаление заголовка
@@ -58,7 +58,7 @@ def parse_flight(row):
         player=cells[2].text.lstrip(),
         time=float(cells[3].find(text=True, recursive=False)),
         green_delta=float(cells[3].sup.text or 0.0),
-        delta=float(cells[4].text),
+        delta=float(cells[4].text.replace(' ', '')),
         drone=cells[5].text,
         date=datetime.strptime(cells[6].text, '%Y-%m-%d %H:%M'),
         updates=int(cells[7].text),

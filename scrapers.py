@@ -29,4 +29,6 @@ class ScraperThread(Thread):
             leaderboard.flights = flights
             leaderboard.world_record = world_record
 
-        PostEvent(self.notify_window, ScrapingCompletedEvent(leaderboards=leaderboards))
+        filled_leaderboards = [lb for lb in leaderboards if lb.flights]
+
+        PostEvent(self.notify_window, ScrapingCompletedEvent(leaderboards=filled_leaderboards))
